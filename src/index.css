@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* Tailwind v4 class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", sans-serif;
+
+  @apply bg-slate-50 text-slate-900
+         dark:bg-slate-950 dark:text-slate-100;
+
+  transition: background-color .3s, color .3s;
+}
+
+/*
+ * Hides a scrollbar while keeping the list scrollable. Used by the stage
+ * podium cards, where a visible bar on the projector looks like a bug.
+ * Previously referenced as `.no-scrollbar` with no definition anywhere.
+ */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+ * LIVE RESULT ANNOUNCER — CINEMATIC TYPOGRAPHY
+ * Scoped to the dark green stage shell only.
+ * Does not change Login, Home, Riyadha or TV Screen.
+ * ============================================ */
+body:has([class*="bg-[#002d22]"]) {
+  --live-display-font: "Arial Narrow", "Roboto Condensed", "Aptos Narrow", "Plus Jakarta Sans", sans-serif;
+  --live-body-font: "Trebuchet MS", "Plus Jakarta Sans", sans-serif;
+}
+
+body:has([class*="bg-[#002d22]"]) [class*="bg-[#002d22]"] {
+  font-family: var(--live-body-font);
+  font-variant-numeric: tabular-nums;
+}
+
+body:has([class*="bg-[#002d22]"]) h1,
+body:has([class*="bg-[#002d22]"]) h2,
+body:has([class*="bg-[#002d22]"]) h3 {
+  font-family: var(--live-display-font);
+  font-stretch: condensed;
+  text-rendering: geometricPrecision;
+}
+
+/* Programme title — sharp broadcast/display feel */
+body:has([class*="bg-[#002d22]"]) h2 {
+  letter-spacing: .025em;
+}
+
+/* Position titles and labels — compact TV-broadcast typography */
+body:has([class*="bg-[#002d22]"]) h3,
+body:has([class*="bg-[#002d22]"]) p {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Winner names — wide enough for long student names while staying bold */
+body:has([class*="bg-[#002d22]"]) div {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+ * TV SCREEN — TEAM POINTS
+ * Keep Arts/Riyadha cards proportional on TV
+ * and let the house name + tally read as one line.
+ * ============================================ */
+@media (min-width: 768px) {
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto {
+    flex: 0 0 auto;
+    width: 100%;
+    height: min(66vh, 42rem);
+    min-height: 0;
+    overflow: hidden;
+    align-content: start;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    row-gap: .65rem;
+    height: 100%;
+    align-items: center;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:first-child {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:first-child > div {
+    min-width: 0;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:first-child p:first-child {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    font-size: clamp(1.15rem, 2.25vw, 2.65rem);
+    letter-spacing: .02em;
+    line-height: 1;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div:first-child > .relative > div:first-child p:first-child {
+    font-size: clamp(1.5rem, 3vw, 3.5rem);
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    margin-bottom: 0;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:nth-child(2) span:first-child {
+    font-size: clamp(3.25rem, 6.5vw, 6.8rem) !important;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div:first-child > .relative > div:nth-child(2) span:first-child {
+    font-size: clamp(4rem, 8vw, 8.5rem) !important;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:nth-child(3) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto {
+    flex: 0 0 auto;
+    overflow: hidden;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    max-height: 70vh;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:first-child p:first-child {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: clamp(1.1rem, 6vw, 1.75rem);
+  }
+
+  .flex-1.grid.grid-cols-1.md\:grid-cols-2.gap-3.md\:gap-4.min-h-0.overflow-auto > div > .relative > div:nth-child(2) span:first-child {
+    font-size: clamp(2.75rem, 13vw, 4.5rem) !important;
+  }
+}

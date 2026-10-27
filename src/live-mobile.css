@@ -1,0 +1,69 @@
+/* FANMENI Result Announcer — mobile portrait layout
+   Desktop/tablet keeps the existing landscape composition. */
+@media (max-width: 767px) {
+  [class*="bg-[#002d22]"] {
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  [class*="bg-[#002d22]"] > header {
+    height: auto !important;
+    min-height: 72px;
+    padding: 12px 16px !important;
+  }
+
+  [class*="bg-[#002d22]"] > main {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 14px 28px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[14vh]"] {
+    height: auto !important;
+    min-height: 126px;
+    padding: 18px 4px 14px !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[48vh]"] {
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[48vh]"] > * {
+    height: auto !important;
+    min-height: 220px;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[48vh]"] [class*="h-full"] {
+    height: auto !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[48vh]"] [class*="flex-1"] {
+    flex: none !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[28vh]"] {
+    height: auto !important;
+    min-height: 260px;
+    margin-top: 14px !important;
+    padding: 16px !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[28vh]"] [class*="grid-cols-2"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  [class*="bg-[#002d22]"] [class*="h-[31vh]"][class*="z-[2]"] {
+    display: none !important;
+  }
+
+  [class*="bg-[#002d22]"] > [class*="absolute"] {
+    min-height: 100%;
+  }
+}
