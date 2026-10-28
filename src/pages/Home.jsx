@@ -27,6 +27,19 @@ import { useLiveTracker } from "../hooks/useLiveTracker";
 import { usePrograms } from "../hooks/usePrograms";
 import TopperSlideshow from "../components/home/TopperSlideshow";
 
+// Accept the category spellings used in older records as well as the
+// display names used on the homepage.
+const normalizeCategory = (value) => {
+  const category = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+  if (["bidaya", "vidhaya", "vidaya"].includes(category)) return "vidhaya";
+  if (["thaniya", "sanya", "saniya", "thaniya"].includes(category)) return "sanya";
+  return category;
+};
+
 export default function Home() {
   const { teams } = useTeams();
   const { students } = useStudents();
@@ -55,12 +68,12 @@ export default function Home() {
   const fanmeniTop5 = rankedStudents.slice(0, 5);
 
   const bidayaTop5 = [...students]
-    .filter((s) => s.category === "Bidaya" && (s.totalPoints || 0) > 0)
+    .filter((s) => normalizeCategory(s.category) === "vidhaya" && (s.totalPoints || 0) > 0)
     .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
     .slice(0, 5);
 
   const thaniyaTop5 = [...students]
-    .filter((s) => s.category === "Thaniya" && (s.totalPoints || 0) > 0)
+    .filter((s) => normalizeCategory(s.category) === "sanya" && (s.totalPoints || 0) > 0)
     .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
     .slice(0, 5);
 
@@ -86,14 +99,15 @@ export default function Home() {
   const maxPoints = sortedTeams[0]?.totalPoints || 1;
   const isLive = !!liveData?.currentProgramId;
 
-  // Category points are calculated from each student's existing totalPoints.
-  // Matching is case-insensitive to tolerate category label variations.
+  // Grand Points use the team's official Arts Fest totalPoints field only.
+  // The two breakdowns sum student Arts points by category; Sports Fest data
+  // is deliberately not used here. Category aliases handle legacy labels.
   const getCategoryPoints = (teamId, category) =>
     students
       .filter(
         (student) =>
           student.teamId === teamId &&
-          String(student.category || "").toLowerCase() === category.toLowerCase()
+          normalizeCategory(student.category) === normalizeCategory(category)
       )
       .reduce((sum, student) => sum + (Number(student.totalPoints) || 0), 0);
 
@@ -253,18 +267,18 @@ export default function Home() {
                         </span>
                       </div>
 
-                      {/* Bidaya and Thaniya category breakdown */}
+                      {/* Arts Fest category breakdown only — Sports is excluded */}
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2 text-center">
-                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-blue-700">Bidaya</p>
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-blue-700">Vidhaya Points</p>
                           <p className="text-lg md:text-xl font-black text-blue-800">
-                            {getCategoryPoints(team.id, "Bidaya")} <span className="text-[10px] font-bold">pts</span>
+                            {getCategoryPoints(team.id, "Vidhaya")} <span className="text-[10px] font-bold">pts</span>
                           </p>
                         </div>
                         <div className="rounded-xl bg-purple-50 border border-purple-100 px-3 py-2 text-center">
-                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-purple-700">Thaniya</p>
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-purple-700">Sanya Points</p>
                           <p className="text-lg md:text-xl font-black text-purple-800">
-                            {getCategoryPoints(team.id, "Thaniya")} <span className="text-[10px] font-bold">pts</span>
+                            {getCategoryPoints(team.id, "Sanya")} <span className="text-[10px] font-bold">pts</span>
                           </p>
                         </div>
                       </div>
@@ -574,14 +588,14 @@ export default function Home() {
               accentColor="emerald"
             />
             <TopperSlideshow
-              title="Bidaya Toppers"
+              title="Vidhaya Toppers"
               subtitle="Junior category leaders"
               toppers={bidayaTop5}
               teams={teams}
               accentColor="blue"
             />
             <TopperSlideshow
-              title="Thaniya Toppers"
+              title="Sanya Toppers"
               subtitle="Senior category leaders"
               toppers={thaniyaTop5}
               teams={teams}
