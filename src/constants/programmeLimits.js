@@ -16,10 +16,10 @@ export const PROGRAMME_LIMITS = {
 
 // Personal student limits:
 // Bidaya: 7 stage + 10 non-stage
-// Thaniya: 7 stage + 7 non-stage
+// Thaniya: 7 stage + 8 non-stage
 export const PERSONAL_LIMITS = {
   Bidaya: { stage: 7, nonStage: 10 },
-  Thaniya: { stage: 7, nonStage: 7 },
+  Thaniya: { stage: 7, nonStage: 8 },
 };
 
 export function getProgrammePrefix(code) {
