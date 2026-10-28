@@ -35,8 +35,8 @@ const normalizeCategory = (value) => {
     .toLowerCase()
     .replace(/[\s_-]+/g, "");
 
-  if (["bidaya", "vidhaya", "vidaya"].includes(category)) return "vidhaya";
-  if (["thaniya", "sanya", "saniya", "thaniya"].includes(category)) return "sanya";
+  if (["bidaya", "vidhaya", "vidaya"].includes(category)) return "bidaya";
+  if (["thaniya", "sanya", "saniya"].includes(category)) return "thaniya";
   return category;
 };
 
@@ -68,12 +68,12 @@ export default function Home() {
   const fanmeniTop5 = rankedStudents.slice(0, 5);
 
   const bidayaTop5 = [...students]
-    .filter((s) => normalizeCategory(s.category) === "vidhaya" && (s.totalPoints || 0) > 0)
+    .filter((s) => normalizeCategory(s.category) === "bidaya" && (s.totalPoints || 0) > 0)
     .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
     .slice(0, 5);
 
   const thaniyaTop5 = [...students]
-    .filter((s) => normalizeCategory(s.category) === "sanya" && (s.totalPoints || 0) > 0)
+    .filter((s) => normalizeCategory(s.category) === "thaniya" && (s.totalPoints || 0) > 0)
     .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
     .slice(0, 5);
 
@@ -270,15 +270,15 @@ export default function Home() {
                       {/* Arts Fest category breakdown only — Sports is excluded */}
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2 text-center">
-                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-blue-700">Vidhaya Points</p>
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-blue-700">Bidaya Points</p>
                           <p className="text-lg md:text-xl font-black text-blue-800">
-                            {getCategoryPoints(team.id, "Vidhaya")} <span className="text-[10px] font-bold">pts</span>
+                            {getCategoryPoints(team.id, "Bidaya")} <span className="text-[10px] font-bold">pts</span>
                           </p>
                         </div>
                         <div className="rounded-xl bg-purple-50 border border-purple-100 px-3 py-2 text-center">
-                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-purple-700">Sanya Points</p>
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-purple-700">Thaniya Points</p>
                           <p className="text-lg md:text-xl font-black text-purple-800">
-                            {getCategoryPoints(team.id, "Sanya")} <span className="text-[10px] font-bold">pts</span>
+                            {getCategoryPoints(team.id, "Thaniya")} <span className="text-[10px] font-bold">pts</span>
                           </p>
                         </div>
                       </div>
@@ -588,14 +588,14 @@ export default function Home() {
               accentColor="emerald"
             />
             <TopperSlideshow
-              title="Vidhaya Toppers"
+              title="Bidaya Toppers"
               subtitle="Junior category leaders"
               toppers={bidayaTop5}
               teams={teams}
               accentColor="blue"
             />
             <TopperSlideshow
-              title="Sanya Toppers"
+              title="Thaniya Toppers"
               subtitle="Senior category leaders"
               toppers={thaniyaTop5}
               teams={teams}
