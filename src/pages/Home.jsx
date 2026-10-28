@@ -86,6 +86,17 @@ export default function Home() {
   const maxPoints = sortedTeams[0]?.totalPoints || 1;
   const isLive = !!liveData?.currentProgramId;
 
+  // Category points are calculated from each student's existing totalPoints.
+  // Matching is case-insensitive to tolerate category label variations.
+  const getCategoryPoints = (teamId, category) =>
+    students
+      .filter(
+        (student) =>
+          student.teamId === teamId &&
+          String(student.category || "").toLowerCase() === category.toLowerCase()
+      )
+      .reduce((sum, student) => sum + (Number(student.totalPoints) || 0), 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50/40">
       {/* GLOWING NAVBAR */}
@@ -240,6 +251,22 @@ export default function Home() {
                         >
                           pts
                         </span>
+                      </div>
+
+                      {/* Bidaya and Thaniya category breakdown */}
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2 text-center">
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-blue-700">Bidaya</p>
+                          <p className="text-lg md:text-xl font-black text-blue-800">
+                            {getCategoryPoints(team.id, "Bidaya")} <span className="text-[10px] font-bold">pts</span>
+                          </p>
+                        </div>
+                        <div className="rounded-xl bg-purple-50 border border-purple-100 px-3 py-2 text-center">
+                          <p className="text-[10px] md:text-xs font-black uppercase tracking-wider text-purple-700">Thaniya</p>
+                          <p className="text-lg md:text-xl font-black text-purple-800">
+                            {getCategoryPoints(team.id, "Thaniya")} <span className="text-[10px] font-bold">pts</span>
+                          </p>
+                        </div>
                       </div>
 
                       {/* Progress bar */}

@@ -9,8 +9,8 @@ const firebaseConfig = {
   projectId: "fanmeni-26",
   storageBucket: "fanmeni-26.firebasestorage.app",
   messagingSenderId: "232654506607",
-  appId: "1:232654506607:web:599431d07e61a2e724db9a",
-  measurementId: "G-CM14YSNHX0"
+  appId: "1:232654506607:web:c26a907533c45b5d24db9a",
+  measurementId: "G-3BYHR36TQ2"
 };
 
 const app = initializeApp(firebaseConfig);

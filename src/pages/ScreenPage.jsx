@@ -181,7 +181,7 @@ export default function ScreenPage() {
             <SlideContainer key="arts">
               <SlideHeader icon={Palette} title="ARTS" subtitle="FANMENI TEAM POINTS" gradient="from-fuchsia-500 to-purple-600" />
               <ScoreboardMeta label="LIVE ARTS SCORECARD" />
-              <TeamPointsSlide teams={artsRanking} maxPoints={maxArts} pointsKey="totalPoints" />
+              <TeamPointsSlide teams={artsRanking} maxPoints={maxArts} pointsKey="totalPoints" students={students} showCategoryBreakdown />
             </SlideContainer>
           )}
 
@@ -290,7 +290,7 @@ function ScoreboardMeta({ label }) {
   );
 }
 
-function TeamPointsSlide({ teams, maxPoints, pointsKey }) {
+function TeamPointsSlide({ teams, maxPoints, pointsKey, students = [], showCategoryBreakdown = false }) {
   const visibleTeams = teams.slice(0, 6);
 
   if (!visibleTeams.length) {
@@ -308,14 +308,14 @@ function TeamPointsSlide({ teams, maxPoints, pointsKey }) {
     <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-4 auto-rows-fr overflow-hidden">
       <AnimatePresence initial={false} mode="popLayout">
         {visibleTeams.map((team, i) => (
-          <VariableScoreCard key={team.id} team={team} rank={i + 1} maxPoints={maxPoints} pointsKey={pointsKey} />
+          <VariableScoreCard key={team.id} team={team} rank={i + 1} maxPoints={maxPoints} pointsKey={pointsKey} students={students} showCategoryBreakdown={showCategoryBreakdown} />
         ))}
       </AnimatePresence>
     </div>
   );
 }
 
-function VariableScoreCard({ team, rank, maxPoints, pointsKey }) {
+function VariableScoreCard({ team, rank, maxPoints, pointsKey, students = [], showCategoryBreakdown = false }) {
   const points = Number(team[pointsKey] || 0);
   const previousPoints = useRef(points);
   const [flash, setFlash] = useState(false);
@@ -337,6 +337,14 @@ function VariableScoreCard({ team, rank, maxPoints, pointsKey }) {
   const isFirst = rank === 1;
   const isTopThree = rank <= 3;
   const teamColor = team.color || "#10b981";
+  const getCategoryPoints = (category) =>
+    students
+      .filter(
+        (student) =>
+          student.teamId === team.id &&
+          String(student.category || "").toLowerCase() === category.toLowerCase()
+      )
+      .reduce((sum, student) => sum + (Number(student.totalPoints) || 0), 0);
 
   return (
     <motion.article
@@ -386,6 +394,18 @@ function VariableScoreCard({ team, rank, maxPoints, pointsKey }) {
               <AnimatedNumber value={points} color={teamColor} emphasized={isFirst || isTopThree} />
               <span className={`${isFirst ? "text-[10px] md:text-sm" : "text-[9px] md:text-xs"} uppercase tracking-[0.18em] font-black text-gray-400`}>PTS</span>
             </div>
+            {showCategoryBreakdown && (
+              <div className="grid grid-cols-2 gap-2 mt-2 md:mt-3">
+                <div className="rounded-lg border border-blue-100 bg-blue-50/90 px-2 py-1.5 text-center">
+                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-wider text-blue-700">Bidaya</p>
+                  <p className="text-sm md:text-lg font-black leading-tight text-blue-800">{getCategoryPoints("Bidaya")} <span className="text-[8px] md:text-[10px]">pts</span></p>
+                </div>
+                <div className="rounded-lg border border-purple-100 bg-purple-50/90 px-2 py-1.5 text-center">
+                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-wider text-purple-700">Thaniya</p>
+                  <p className="text-sm md:text-lg font-black leading-tight text-purple-800">{getCategoryPoints("Thaniya")} <span className="text-[8px] md:text-[10px]">pts</span></p>
+                </div>
+              </div>
+            )}
             <div className="mt-2 md:mt-3 h-2 md:h-2.5 rounded-full bg-gray-100 overflow-hidden shadow-inner">
               <motion.div initial={{ width: 0 }} animate={{ width: `${percentage}%` }} transition={{ duration: 1.1, ease: "easeOut" }} className="h-full rounded-full relative overflow-hidden" style={{ backgroundColor: teamColor }}>
                 <motion.div animate={{ x: ["-100%", "100%"] }} transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }} className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-[-18deg]" />
