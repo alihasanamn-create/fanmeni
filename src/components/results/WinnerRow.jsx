@@ -98,20 +98,48 @@ export default function WinnerRow({
             <select
               value={winner.groupId || ""}
               onChange={(e) => {
-                const [teamId, groupNum] = e.target.value.split("|");
-                const team = teams.find((t) => t.id === teamId);
-                if (!team) {
-                  onChange({ ...winner, groupId: "", teamId: "", teamName: "", displayName: "" });
+                const selectedGroupId = e.target.value;
+
+                if (!selectedGroupId) {
+                  onChange({
+                    ...winner,
+                    groupId: "",
+                    teamId: "",
+                    teamName: "",
+                    displayName: "",
+                    groupNumber: null,
+                    studentName: "",
+                  });
                   return;
                 }
-                const displayName = groupsPerTeam > 1 ? `${team.name} ${groupNum}` : team.name;
+
+                const [teamId, selectedGroupNum] = selectedGroupId.split("|");
+                const groupNum = parseInt(selectedGroupNum, 10) || 1;
+                const team = teams.find((t) => String(t.id) === teamId);
+
+                if (!team) {
+                  onChange({
+                    ...winner,
+                    groupId: "",
+                    teamId: "",
+                    teamName: "",
+                    displayName: "",
+                    groupNumber: null,
+                    studentName: "",
+                  });
+                  return;
+                }
+
+                const displayName =
+                  groupsPerTeam > 1 ? `${team.name} ${groupNum}` : team.name;
+
                 onChange({
                   ...winner,
-                  groupId: e.target.value,
-                  teamId: teamId,
+                  groupId: selectedGroupId,
+                  teamId: team.id,
                   teamName: team.name,
-                  displayName: displayName,
-                  groupNumber: parseInt(groupNum) || 1,
+                  displayName,
+                  groupNumber: groupNum,
                   studentName: displayName,
                 });
               }}
@@ -123,7 +151,9 @@ export default function WinnerRow({
                   .map((groupNum) => {
                     const groupId = `${team.id}|${groupNum}`;
                     const label = groupsPerTeam > 1 ? `${team.name} ${groupNum}` : team.name;
-                    const isUsed = usedGroupIds.includes(groupId) && groupId !== winner.groupId;
+                    const isUsed =
+                      usedGroupIds.some((usedId) => String(usedId) === groupId) &&
+                      groupId !== String(winner.groupId || "");
 
                     // Filter only the exact group that has already been selected.
                     // Other groups belonging to the same team remain available.
