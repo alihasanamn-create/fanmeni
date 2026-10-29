@@ -118,24 +118,25 @@ export default function WinnerRow({
               className="w-full px-3 py-2.5 border border-gray-200 rounded-lg outline-none bg-white text-sm font-medium"
             >
               <option value="">Select Team</option>
-              {teams.map((team) => {
-                const options = [];
-                for (let g = 1; g <= groupsPerTeam; g++) {
-                  const groupId = `${team.id}|${g}`;
-                  const label = groupsPerTeam > 1 ? `${team.name} ${g}` : team.name;
-                  const isUsed = usedGroupIds.includes(groupId) && groupId !== winner.groupId;
-                  // Hide only the exact group already selected elsewhere.
-                  // Do not return from the team callback: that would also hide
-                  // other groups belonging to the same team.
-                  if (isUsed) continue;
-                  options.push(
-                    <option key={groupId} value={groupId}>
-                      {label}
-                    </option>
-                  );
-                }
-                return options;
-              })}
+              {teams.flatMap((team) =>
+                Array.from({ length: groupsPerTeam }, (_, i) => i + 1)
+                  .map((groupNum) => {
+                    const groupId = `${team.id}|${groupNum}`;
+                    const label = groupsPerTeam > 1 ? `${team.name} ${groupNum}` : team.name;
+                    const isUsed = usedGroupIds.includes(groupId) && groupId !== winner.groupId;
+
+                    // Filter only the exact group that has already been selected.
+                    // Other groups belonging to the same team remain available.
+                    if (isUsed) return null;
+
+                    return (
+                      <option key={groupId} value={groupId}>
+                        {label}
+                      </option>
+                    );
+                  })
+                  .filter(Boolean)
+              )}
             </select>
           </div>
 
