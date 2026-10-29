@@ -35,8 +35,8 @@ const normalizeCategory = (value) => {
     .toLowerCase()
     .replace(/[\s_-]+/g, "");
 
-  if (["bidaya", "vidhaya", "vidaya"].includes(category)) return "bidaya";
-  if (["thaniya", "sanya", "saniya"].includes(category)) return "thaniya";
+  if (["bidaya", "Bidaya", "Bidaya"].includes(category)) return "bidaya";
+  if (["thaniya", "Thaniya", "Thaniya", "Thaniya", "Thaniya"].includes(category)) return "thaniya";
   return category;
 };
 
