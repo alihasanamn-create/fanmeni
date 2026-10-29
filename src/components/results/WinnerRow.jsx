@@ -124,8 +124,10 @@ export default function WinnerRow({
                   const groupId = `${team.id}|${g}`;
                   const label = groupsPerTeam > 1 ? `${team.name} ${g}` : team.name;
                   const isUsed = usedGroupIds.includes(groupId) && groupId !== winner.groupId;
-                  // ⚡ HIDE used options
-                  if (isUsed) return null;
+                  // Hide only the exact group already selected elsewhere.
+                  // Do not return from the team callback: that would also hide
+                  // other groups belonging to the same team.
+                  if (isUsed) continue;
                   options.push(
                     <option key={groupId} value={groupId}>
                       {label}
