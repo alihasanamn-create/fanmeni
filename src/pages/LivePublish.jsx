@@ -46,7 +46,29 @@ export default function LivePublish() {
     return () => unsub();
   }, []);
 
-  const publishedResults = results.filter((r) => r.status === "published");
+  // Show the most recently updated published results first.
+  // Fall back to other common timestamps when updatedAt is not present.
+  const publishedResults = results
+    .filter((r) => r.status === "published")
+    .sort((a, b) => {
+      const getTimestamp = (result) => {
+        const value =
+          result.updatedAt ??
+          result.updated_at ??
+          result.publishedAt ??
+          result.createdAt ??
+          result.created_at ??
+          0;
+
+        if (typeof value === "number") return value;
+        if (typeof value?.toDate === "function") return value.toDate().getTime();
+
+        const timestamp = new Date(value).getTime();
+        return Number.isFinite(timestamp) ? timestamp : 0;
+      };
+
+      return getTimestamp(b) - getTimestamp(a);
+    });
 
   const filteredResults = publishedResults.filter(
     (r) =>
