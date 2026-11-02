@@ -403,16 +403,7 @@ export default function AdminDashboard() {
         </section>
       )}
 
-      {/* RIYADHA CHAMPION CARD */}
-      {riyadaChampion && (
-        <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm p-5 md:p-6 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0"><Trophy className="w-7 h-7 md:w-8 md:h-8 text-blue-600" /></div>
-            <div className="flex-1 min-w-0"><p className="text-xs text-blue-700 font-bold uppercase tracking-wider">Riyadha Champion</p><h3 className="text-lg md:text-xl font-black text-gray-900 dark:text-white truncate">{riyadaChampion.name}</h3><p className="text-sm text-gray-600 dark:text-gray-400">Leading with {riyadaChampion.displayedTotal} points after Riyadha demerits</p></div>
-            <Link to="/team-points" className="hidden sm:flex px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition flex-shrink-0">View All</Link>
-          </div>
-        </section>
-      )}
+     
 
       {/* QUICK NAVIGATION */}
       <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-4 md:p-5">
