@@ -143,6 +143,10 @@ service cloud.firestore {
       allow write: if admin();
     }
 
+// Arts demerits: admins only
+match /artsDemerits/{demeritId} {
+  allow read, create, update, delete: if admin();
+}
     match /downloads/{docId} {
       allow read: if publicRead() || admin() || captain();
       allow write: if admin();
