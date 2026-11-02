@@ -1,7 +1,8 @@
-// ============================================
-// FILE: src/utils/pdfGenerators.js
-// PURPOSE: Beautiful PDF generators for all reports
-// ============================================
+
+ // ============================================
+ // FILE: src/utils/pdfGenerators.js
+ // PURPOSE: Compact PDF generators for all reports
+ // ============================================
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -12,47 +13,44 @@ import autoTable from "jspdf-autotable";
 const addHeader = (doc, settings, title, subtitle) => {
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Top gradient bar
-  doc.setFillColor(16, 185, 129); // emerald-500
+  doc.setFillColor(16, 185, 129);
   doc.rect(0, 0, pageWidth, 8, "F");
 
-  // Festival name
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(15, 23, 42); // slate-900
+  doc.setTextColor(15, 23, 42);
   doc.text(settings.festivalName || "FANMENI", 14, 25);
 
-  // Tagline
   if (settings.tagline) {
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139); // slate-500
+    doc.setTextColor(100, 116, 139);
     doc.text(settings.tagline, 14, 32);
   }
 
-  // Right side: School name + date
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   const rightX = pageWidth - 14;
+
   if (settings.schoolName) {
-    doc.text(settings.schoolName, rightX, 25, { align: "right" });
+    doc.text(settings.schoolName, rightX, 25, {
+      align: "right",
+    });
   }
+
   doc.text(new Date().toLocaleDateString("en-GB"), rightX, 32, {
     align: "right",
   });
 
-  // Divider
-  doc.setDrawColor(226, 232, 240); // slate-200
+  doc.setDrawColor(226, 232, 240);
   doc.setLineWidth(0.3);
   doc.line(14, 38, pageWidth - 14, 38);
 
-  // Report title
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(15, 23, 42);
   doc.text(title, 14, 50);
 
-  // Subtitle
   if (subtitle) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
@@ -60,7 +58,7 @@ const addHeader = (doc, settings, title, subtitle) => {
     doc.text(subtitle, 14, 57);
   }
 
-  return 65; // Return next Y position
+  return 65;
 };
 
 // ============================================
@@ -74,13 +72,14 @@ const addFooter = (doc, settings) => {
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
-    doc.setTextColor(148, 163, 184); // slate-400
+    doc.setTextColor(148, 163, 184);
 
     doc.text(
       `${settings.festivalName || "FANMENI"} • ${new Date().toLocaleDateString("en-GB")}`,
       14,
       pageHeight - 8
     );
+
     doc.text(
       `Page ${i} of ${pageCount}`,
       pageWidth - 14,
@@ -120,7 +119,8 @@ const tableStyle = {
 // ============================================
 export const generateTeamsPDF = (teams, students, settings) => {
   const doc = new jsPDF();
-  let startY = addHeader(
+
+  const startY = addHeader(
     doc,
     settings,
     "Teams Report",
@@ -131,12 +131,15 @@ export const generateTeamsPDF = (teams, students, settings) => {
     (a, b) => (b.totalPoints || 0) - (a.totalPoints || 0)
   );
 
-  // Teams Summary Table
   const summaryData = sortedTeams.map((team, i) => {
-    const memberCount = students.filter((s) => s.teamId === team.id).length;
+    const memberCount = students.filter(
+      (s) => s.teamId === team.id
+    ).length;
+
     const bidayaCount = students.filter(
       (s) => s.teamId === team.id && s.category === "Bidaya"
     ).length;
+
     const thaniyaCount = students.filter(
       (s) => s.teamId === team.id && s.category === "Thaniya"
     ).length;
@@ -154,14 +157,19 @@ export const generateTeamsPDF = (teams, students, settings) => {
 
   autoTable(doc, {
     startY,
-    head: [
-      ["#", "Team Name", "Total", "Bidaya", "Thaniya", "Captain", "Points"],
-    ],
+    head: [[
+      "#",
+      "Team Name",
+      "Total",
+      "Bidaya",
+      "Thaniya",
+      "Captain",
+      "Points",
+    ]],
     body: summaryData,
     ...tableStyle,
   });
 
-  // Detailed team-wise students (each team on new section)
   sortedTeams.forEach((team) => {
     const teamStudents = students
       .filter((s) => s.teamId === team.id)
@@ -174,21 +182,40 @@ export const generateTeamsPDF = (teams, students, settings) => {
     if (teamStudents.length === 0) return;
 
     doc.addPage();
-    let y = addHeader(doc, settings, team.name, `${teamStudents.length} members`);
 
-    // Color header bar
+    let y = addHeader(
+      doc,
+      settings,
+      team.name,
+      `${teamStudents.length} members`
+    );
+
     const rgb = hexToRgb(team.color || "#10b981");
+
     doc.setFillColor(rgb.r, rgb.g, rgb.b);
     doc.rect(14, y, doc.internal.pageSize.getWidth() - 28, 8, "F");
+
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text(`Team: ${team.name}  •  Points: ${team.totalPoints || 0}`, 18, y + 5.5);
+    doc.text(
+      `Team: ${team.name} • Points: ${team.totalPoints || 0}`,
+      18,
+      y + 5.5
+    );
+
     y += 12;
 
     autoTable(doc, {
       startY: y,
-      head: [["Chest #", "Name", "Class", "Category", "Adm #", "Points"]],
+      head: [[
+        "Chest #",
+        "Name",
+        "Class",
+        "Category",
+        "Adm #",
+        "Points",
+      ]],
       body: teamStudents.map((s) => [
         s.chestNumber || "-",
         s.name,
@@ -206,15 +233,19 @@ export const generateTeamsPDF = (teams, students, settings) => {
   });
 
   addFooter(doc, settings);
-  doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Teams.pdf`);
+
+  doc.save(
+    `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Teams.pdf`
+  );
 };
 
 // ============================================
 // 2. STUDENTS PDF
 // ============================================
 export const generateStudentsPDF = (students, teams, settings) => {
-  const doc = new jsPDF("l"); // landscape
-  let startY = addHeader(
+  const doc = new jsPDF("l");
+
+  const startY = addHeader(
     doc,
     settings,
     "Students List",
@@ -229,21 +260,20 @@ export const generateStudentsPDF = (students, teams, settings) => {
 
   autoTable(doc, {
     startY,
-    head: [
-      [
-        "SL",
-        "Chest #",
-        "Name",
-        "Class",
-        "Category",
-        "Team",
-        "Captain",
-        "Adm #",
-        "Points",
-      ],
-    ],
+    head: [[
+      "SL",
+      "Chest #",
+      "Name",
+      "Class",
+      "Category",
+      "Team",
+      "Captain",
+      "Adm #",
+      "Points",
+    ]],
     body: sorted.map((s, i) => {
       const team = teams.find((t) => t.id === s.teamId);
+
       return [
         i + 1,
         s.chestNumber || "-",
@@ -260,17 +290,26 @@ export const generateStudentsPDF = (students, teams, settings) => {
   });
 
   addFooter(doc, settings);
-  doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Students.pdf`);
+
+  doc.save(
+    `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Students.pdf`
+  );
 };
 
 // ============================================
 // 3. PROGRAMS PDF (Arts or Sports)
 // ============================================
-export const generateProgramsPDF = (programs, moduleType, settings) => {
+export const generateProgramsPDF = (
+  programs,
+  moduleType,
+  settings
+) => {
   const doc = new jsPDF();
-  const title = moduleType === "sports" ? "Sports Programs" : "Arts Programs";
 
-  let startY = addHeader(
+  const title =
+    moduleType === "sports" ? "Sports Programs" : "Arts Programs";
+
+  const startY = addHeader(
     doc,
     settings,
     title,
@@ -285,9 +324,16 @@ export const generateProgramsPDF = (programs, moduleType, settings) => {
 
   autoTable(doc, {
     startY,
-    head: [
-      ["Code", "Program Name", "Category", "Type", "Max/Team", "1st", "2nd", "3rd"],
-    ],
+    head: [[
+      "Code",
+      "Program Name",
+      "Category",
+      "Type",
+      "Max/Team",
+      "1st",
+      "2nd",
+      "3rd",
+    ]],
     body: sorted.map((p) => [
       p.code || "-",
       p.name || p.program,
@@ -302,87 +348,86 @@ export const generateProgramsPDF = (programs, moduleType, settings) => {
   });
 
   addFooter(doc, settings);
+
   doc.save(
     `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${moduleType === "sports" ? "Sports" : "Arts"}_Programs.pdf`
   );
 };
 
 // ============================================
-// 4. RESULTS PDF (Arts or Sports)
+// 4. RESULTS PDF (Arts or Sports) — COMPACT
 // ============================================
-export const generateResultsPDF = (results, moduleType, settings, teams) => {
+export const generateResultsPDF = (
+  results,
+  moduleType,
+  settings,
+  teams
+) => {
   const doc = new jsPDF();
-  const title = moduleType === "sports" ? "Sports Results" : "Arts Results";
+
+  const title =
+    moduleType === "sports" ? "Sports Results" : "Arts Results";
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 8;
+  const usableWidth = pageWidth - margin * 2;
 
   const filteredResults = results.filter(
     (r) => r.moduleType === moduleType && r.status !== "draft"
   );
 
-  let startY = addHeader(
-    doc,
-    settings,
-    title,
-    `${filteredResults.length} published results`
+  // Minimal report heading.
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(25, 35, 45);
+  doc.text(settings.festivalName || "FANMENI", margin, 10);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(100, 100, 100);
+  doc.text(
+    `${title} | ${new Date().toLocaleDateString("en-GB")} | ${filteredResults.length} published results`,
+    margin,
+    14
   );
 
+  doc.setDrawColor(190, 190, 190);
+  doc.setLineWidth(0.2);
+  doc.line(margin, 17, pageWidth - margin, 17);
+
+  let startY = 20;
+
   if (filteredResults.length === 0) {
-    doc.setFontSize(12);
-    doc.setTextColor(148, 163, 184);
-    doc.text("No published results yet.", 14, startY);
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text("No published results yet.", margin, startY + 3);
+
     addFooter(doc, settings);
-    doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title}.pdf`);
+
+    doc.save(
+      `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`
+    );
+
     return;
   }
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-
-  filteredResults.forEach((r, idx) => {
-    if (idx > 0) {
-      startY += 4;
-      if (startY > 250) {
-        doc.addPage();
-        startY = 20;
-      }
-    }
-
-    // Program header block
-    doc.setFillColor(240, 253, 250); // emerald-50
-    doc.rect(14, startY, pageWidth - 28, 14, "F");
-    doc.setDrawColor(16, 185, 129);
-    doc.setLineWidth(0.5);
-    doc.line(14, startY, 14, startY + 14);
-
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(15, 23, 42);
-    doc.text(
-      `${r.programCode ? "#" + r.programCode + " - " : ""}${r.programName}`,
-      18,
-      startY + 6
-    );
-
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text(
-      `${r.category} • ${r.type} • ${resultTypeLabel(r.resultType)}`,
-      18,
-      startY + 11
-    );
-
-    startY += 18;
-
-    // Winners table
+  filteredResults.forEach((r) => {
     const winnersData = [];
 
     if (r.resultType !== "grades_only") {
-      const posEmojis = { first: "1st", second: "2nd", third: "3rd" };
+      const positionLabels = {
+        first: "1st",
+        second: "2nd",
+        third: "3rd",
+      };
+
       ["first", "second", "third"].forEach((pos) => {
-        const winners = r.positions?.[pos] || [];
-        winners.forEach((w) => {
+        (r.positions?.[pos] || []).forEach((w) => {
           const team = teams.find((t) => t.id === w.teamId);
+
           winnersData.push([
-            posEmojis[pos],
+            positionLabels[pos],
             w.chestNumber || "-",
             w.studentName || w.teamName || "-",
             team?.name || "-",
@@ -392,9 +437,9 @@ export const generateResultsPDF = (results, moduleType, settings, teams) => {
       });
     }
 
-    // Additional grades
     (r.additionalGrades || []).forEach((g) => {
       const team = teams.find((t) => t.id === g.teamId);
+
       winnersData.push([
         "Grade",
         g.chestNumber || "-",
@@ -404,31 +449,132 @@ export const generateResultsPDF = (results, moduleType, settings, teams) => {
       ]);
     });
 
+    const programLabel =
+      `${r.programCode ? "#" + r.programCode + " - " : ""}${r.programName || "Unnamed program"}`;
+
+    const details = [
+      r.category,
+      r.type,
+      resultTypeLabel(r.resultType),
+    ].filter(Boolean).join(" | ");
+
+    if (startY > pageHeight - 24) {
+      doc.addPage();
+      startY = 10;
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(25, 35, 45);
+
+    const wrappedLabel = doc.splitTextToSize(
+      programLabel,
+      usableWidth
+    );
+
+    doc.text(wrappedLabel, margin, startY);
+    startY += wrappedLabel.length * 3.4;
+
+    if (details) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.setTextColor(100, 100, 100);
+
+      const wrappedDetails = doc.splitTextToSize(
+        details,
+        usableWidth
+      );
+
+      doc.text(wrappedDetails, margin, startY);
+      startY += wrappedDetails.length * 2.8;
+    }
+
+    startY += 1;
+
     if (winnersData.length > 0) {
       autoTable(doc, {
         startY,
-        head: [["Position", "Chest #", "Name", "Team", "Grade"]],
+        head: [["Pos.", "Chest #", "Name", "Team", "Grade"]],
         body: winnersData,
-        ...tableStyle,
-        margin: { left: 14, right: 14 },
+        theme: "grid",
+        margin: {
+          left: margin,
+          right: margin,
+          bottom: 12,
+        },
+        tableWidth: usableWidth,
+        styles: {
+          font: "helvetica",
+          fontSize: 6.5,
+          cellPadding: 1.2,
+          textColor: [35, 35, 35],
+          lineColor: [215, 215, 215],
+          lineWidth: 0.1,
+          overflow: "linebreak",
+          valign: "middle",
+        },
+        headStyles: {
+          fillColor: [238, 241, 243],
+          textColor: [35, 35, 35],
+          fontStyle: "bold",
+          fontSize: 6.5,
+          cellPadding: 1.2,
+        },
+        columnStyles: {
+          0: { cellWidth: 13, halign: "center" },
+          1: { cellWidth: 17, halign: "center" },
+          2: { cellWidth: "auto" },
+          3: { cellWidth: 30 },
+          4: { cellWidth: 15, halign: "center" },
+        },
+        rowPageBreak: "avoid",
       });
 
-      startY = doc.lastAutoTable.finalY + 6;
+      startY = doc.lastAutoTable.finalY + 3;
     } else {
-      startY += 4;
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(6.5);
+      doc.setTextColor(110, 110, 110);
+      doc.text(
+        "No positions or grades recorded.",
+        margin,
+        startY + 2
+      );
+
+      startY += 5;
+    }
+
+    startY += 2;
+
+    if (startY > pageHeight - 15) {
+      doc.addPage();
+      startY = 10;
     }
   });
 
   addFooter(doc, settings);
-  doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`);
+
+  doc.save(
+    `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`
+  );
 };
 
 // ============================================
 // 5. CANDIDATES PDF (Arts or Sports)
 // ============================================
-export const generateCandidatesPDF = (candidates, programs, moduleType, settings, teams) => {
+export const generateCandidatesPDF = (
+  candidates,
+  programs,
+  moduleType,
+  settings,
+  teams
+) => {
   const doc = new jsPDF();
-  const title = moduleType === "sports" ? "Sports Candidates" : "Arts Candidates";
+
+  const title =
+    moduleType === "sports"
+      ? "Sports Candidates"
+      : "Arts Candidates";
 
   const filteredCandidates = candidates.filter((c) => {
     const program = programs.find((p) => p.id === c.programId);
@@ -446,24 +592,30 @@ export const generateCandidatesPDF = (candidates, programs, moduleType, settings
     doc.setFontSize(12);
     doc.setTextColor(148, 163, 184);
     doc.text("No candidates assigned yet.", 14, startY);
+
     addFooter(doc, settings);
-    doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`);
+
+    doc.save(
+      `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`
+    );
+
     return;
   }
 
   filteredCandidates.forEach((c, idx) => {
     if (idx > 0) {
       startY += 6;
+
       if (startY > 240) {
         doc.addPage();
         startY = 20;
       }
     }
 
-    // Program title
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(16, 185, 129);
+
     doc.text(
       `${c.programCode ? "#" + c.programCode + " - " : ""}${c.programName}`,
       14,
@@ -473,23 +625,31 @@ export const generateCandidatesPDF = (candidates, programs, moduleType, settings
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text(`${c.category} • ${c.type} • ${c.totalCandidates} candidates`, 14, startY + 4);
+
+    doc.text(
+      `${c.category} • ${c.type} • ${c.totalCandidates} candidates`,
+      14,
+      startY + 4
+    );
 
     startY += 8;
 
-    // Team-wise candidates
     const rows = [];
-    Object.entries(c.teamCandidates || {}).forEach(([teamId, teamStudents]) => {
-      const team = teams.find((t) => t.id === teamId);
-      teamStudents.forEach((s) => {
-        rows.push([
-          team?.name || "-",
-          s.chestNumber || "-",
-          s.studentName,
-          s.class || "-",
-        ]);
-      });
-    });
+
+    Object.entries(c.teamCandidates || {}).forEach(
+      ([teamId, teamStudents]) => {
+        const team = teams.find((t) => t.id === teamId);
+
+        teamStudents.forEach((s) => {
+          rows.push([
+            team?.name || "-",
+            s.chestNumber || "-",
+            s.studentName,
+            s.class || "-",
+          ]);
+        });
+      }
+    );
 
     autoTable(doc, {
       startY,
@@ -502,26 +662,41 @@ export const generateCandidatesPDF = (candidates, programs, moduleType, settings
   });
 
   addFooter(doc, settings);
-  doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`);
+
+  doc.save(
+    `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_${title.replace(/\s+/g, "_")}.pdf`
+  );
 };
 
 // ============================================
 // 6. PERSONAL POINTS PDF
 // ============================================
-export const generatePersonalPointsPDF = (students, teams, settings, category = "All") => {
+export const generatePersonalPointsPDF = (
+  students,
+  teams,
+  settings,
+  category = "All"
+) => {
   const doc = new jsPDF();
 
-  let filtered = [...students].filter((s) => (s.totalPoints || 0) > 0);
+  let filtered = [...students].filter(
+    (s) => (s.totalPoints || 0) > 0
+  );
+
   if (category !== "All") {
     filtered = filtered.filter((s) => s.category === category);
   }
-  filtered.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
 
-  const title = category === "All"
-    ? "Personal Points - Overall"
-    : `Personal Points - ${category}`;
+  filtered.sort(
+    (a, b) => (b.totalPoints || 0) - (a.totalPoints || 0)
+  );
 
-  let startY = addHeader(
+  const title =
+    category === "All"
+      ? "Personal Points - Overall"
+      : `Personal Points - ${category}`;
+
+  const startY = addHeader(
     doc,
     settings,
     title,
@@ -530,9 +705,17 @@ export const generatePersonalPointsPDF = (students, teams, settings, category = 
 
   autoTable(doc, {
     startY,
-    head: [["Rank", "Chest #", "Name", "Category", "Team", "Points"]],
+    head: [[
+      "Rank",
+      "Chest #",
+      "Name",
+      "Category",
+      "Team",
+      "Points",
+    ]],
     body: filtered.map((s, i) => {
       const team = teams.find((t) => t.id === s.teamId);
+
       return [
         i + 1,
         s.chestNumber || "-",
@@ -546,6 +729,7 @@ export const generatePersonalPointsPDF = (students, teams, settings, category = 
   });
 
   addFooter(doc, settings);
+
   doc.save(
     `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Personal_Points_${category}.pdf`
   );
@@ -554,36 +738,51 @@ export const generatePersonalPointsPDF = (students, teams, settings, category = 
 // ============================================
 // 7. TEAM POINTS PDF (Grand Total)
 // ============================================
-export const generateTeamPointsPDF = (teams, students, results, settings) => {
+export const generateTeamPointsPDF = (
+  teams,
+  students,
+  results,
+  settings
+) => {
   const doc = new jsPDF();
+
   const sorted = [...teams].sort(
     (a, b) => (b.totalPoints || 0) - (a.totalPoints || 0)
   );
 
-  let startY = addHeader(
+  const startY = addHeader(
     doc,
     settings,
     "Team Grand Total",
     `${teams.length} teams competing`
   );
 
-  const publishedResults = results.filter((r) => r.status !== "draft");
+  const publishedResults = results.filter(
+    (r) => r.status !== "draft"
+  );
 
   const rows = sorted.map((team, i) => {
-    let firstCount = 0, secondCount = 0, thirdCount = 0;
+    let firstCount = 0;
+    let secondCount = 0;
+    let thirdCount = 0;
+
     publishedResults.forEach((r) => {
       (r.positions?.first || []).forEach((w) => {
         if (w.teamId === team.id) firstCount++;
       });
+
       (r.positions?.second || []).forEach((w) => {
         if (w.teamId === team.id) secondCount++;
       });
+
       (r.positions?.third || []).forEach((w) => {
         if (w.teamId === team.id) thirdCount++;
       });
     });
 
-    const memberCount = students.filter((s) => s.teamId === team.id).length;
+    const memberCount = students.filter(
+      (s) => s.teamId === team.id
+    ).length;
 
     return [
       i + 1,
@@ -598,13 +797,24 @@ export const generateTeamPointsPDF = (teams, students, results, settings) => {
 
   autoTable(doc, {
     startY,
-    head: [["Rank", "Team", "Members", "1st", "2nd", "3rd", "Total Points"]],
+    head: [[
+      "Rank",
+      "Team",
+      "Members",
+      "1st",
+      "2nd",
+      "3rd",
+      "Total Points",
+    ]],
     body: rows,
     ...tableStyle,
   });
 
   addFooter(doc, settings);
-  doc.save(`${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Team_Points.pdf`);
+
+  doc.save(
+    `${(settings.festivalName || "FANMENI").replace(/\s+/g, "_")}_Team_Points.pdf`
+  );
 };
 
 // ============================================
@@ -612,6 +822,7 @@ export const generateTeamPointsPDF = (teams, students, results, settings) => {
 // ============================================
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
   return result
     ? {
         r: parseInt(result[1], 16),
@@ -627,5 +838,6 @@ function resultTypeLabel(type) {
     positions_only: "Positions Only",
     grades_only: "Grades Only",
   };
+
   return labels[type] || "";
 }
