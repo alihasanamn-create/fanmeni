@@ -15,7 +15,32 @@ export default function BroadcastQueue() {
   const { broadcastData } = useBroadcast();
   const [search, setSearch] = useState("");
 
-  const publishedResults = results.filter((r) => r.status === "published");
+  // Sort by the actual last-updated timestamp, newest first.
+  // Firestore Timestamp values support toMillis(); older records fall back to createdAt.
+  const getResultTimestamp = (result) => {
+    const value = result.updatedAt ?? result.createdAt;
+    if (value == null) return 0;
+
+    if (typeof value.toMillis === "function") return value.toMillis();
+    if (typeof value.toDate === "function") return value.toDate().getTime();
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === "number") {
+      // Support epoch seconds as well as epoch milliseconds.
+      return value < 1e12 ? value * 1000 : value;
+    }
+    if (typeof value === "string") {
+      const parsed = Date.parse(value);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+    if (typeof value.seconds === "number") {
+      return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1e6);
+    }
+    return 0;
+  };
+
+  const publishedResults = results
+    .filter((r) => r.status === "published")
+    .sort((a, b) => getResultTimestamp(b) - getResultTimestamp(a));
 
   const filteredResults = publishedResults.filter(
     (r) =>
