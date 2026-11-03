@@ -373,9 +373,57 @@ export const generateResultsPDF = (
   const margin = 8;
   const usableWidth = pageWidth - margin * 2;
 
-  const filteredResults = results.filter(
-    (r) => r.moduleType === moduleType && r.status !== "draft"
-  );
+  // Sort results chronologically:
+// oldest results first, latest results at the bottom.
+const getResultTime = (result) => {
+  const value =
+    result.createdAt ??
+    result.publishedAt ??
+    result.updatedAt ??
+    result.timestamp ??
+    result.date;
+
+  if (!value) return null;
+
+  if (typeof value.toMillis === "function") {
+    return value.toMillis();
+  }
+
+  if (typeof value.toDate === "function") {
+    return value.toDate().getTime();
+  }
+
+  const parsed = new Date(value).getTime();
+
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const filteredResults = results
+  .filter(
+    (r) =>
+      r.moduleType === moduleType &&
+      r.status !== "draft"
+  )
+  .map((result, originalIndex) => ({
+    result,
+    originalIndex,
+    time: getResultTime(result),
+  }))
+  .sort((a, b) => {
+    // Keep undated legacy results after dated results.
+    if (a.time == null && b.time == null) {
+      return a.originalIndex - b.originalIndex;
+    }
+
+    if (a.time == null) return 1;
+    if (b.time == null) return -1;
+
+    return (
+      a.time - b.time ||
+      a.originalIndex - b.originalIndex
+    );
+  })
+  .map(({ result }) => result);
 
   // Minimal report heading.
   doc.setFont("helvetica", "bold");
